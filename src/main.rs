@@ -63,6 +63,6 @@ fn main() -> Result<(), Box<std::error::Error>> {
         // break;
     }
     let json_str = serde_json::to_string(&episodes);
-    println!("{:?}", json_str.unwrap());
+    println!("{}", json_str.unwrap());
     Ok(())
 }
