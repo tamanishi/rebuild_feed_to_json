@@ -1,7 +1,12 @@
 # rebuild_feed_to_json
 
-- parse rss feed from [rebuild](http://rebuild.fm/) and output its summary json.
-- re-implemented with rust. implementd with node.js before.
+- Parse rss feed from [rebuild](http://rebuild.fm/) and output its summary json.
+- Re-implemented with rust. previously implemented with node.js.
+
+## Build
+
+- Build with [AWS Lambda Rust docker builder](https://github.com/softprops/lambda-rust)
 
 ## TODOs
-- [ ] deploy AWS with custom rutime.
+
+- [x] Deploy as AWS Lambda with custom runtime.

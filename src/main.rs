@@ -1,4 +1,5 @@
-#[macro_use] extern crate lambda_runtime as lambda;
+#[macro_use]
+extern crate lambda_runtime as lambda;
 #[macro_use]
 extern crate serde_derive;
 #[macro_use]
@@ -6,16 +7,18 @@ extern crate log;
 extern crate simple_logger;
 extern crate rss;
 
+use lambda::error::HandlerError;
 use rss::{Channel, Item};
 use scraper::{Html, Selector};
+use std::error::Error;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 struct Episodes {
     episodes: Vec<Episode>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 struct Episode {
     title: String,
@@ -24,15 +27,22 @@ struct Episode {
     shownotes: Vec<Shownote>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 struct Shownote {
     title: String,
     url: String,
 }
 
-fn main() -> Result<(), Box<std::error::Error>> {
-    let channel = Channel::from_url("http://feeds.rebuild.fm/rebuildfm")?;
+fn main() -> Result<(), Box<dyn Error>> {
+    simple_logger::init_with_level(log::Level::Info)?;
+    lambda!(handler); 
+
+    Ok(())
+}
+
+fn handler(_e: Episodes, _c: lambda::Context) -> Result<Episodes, HandlerError> {
+    let channel = Channel::from_url("http://feeds.rebuild.fm/rebuildfm").unwrap();
     let items: &[Item] = channel.items();
     let mut episodes = Episodes {
         episodes: Vec::new(),
@@ -60,9 +70,6 @@ fn main() -> Result<(), Box<std::error::Error>> {
             episode.shownotes.push(shownote);
         }
         episodes.episodes.push(episode);
-        // break;
     }
-    let json_str = serde_json::to_string(&episodes);
-    println!("{}", json_str.unwrap());
-    Ok(())
+    Ok(episodes)
 }
