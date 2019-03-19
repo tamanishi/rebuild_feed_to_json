@@ -13,3 +13,4 @@ log = "0.4.6"
 simple_logger = "1.0.1"
 rss = { version = "1.6.1", features = ["from_url"] }
 scraper = "0.9.1"
+chrono = "0.4.6"

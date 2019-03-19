@@ -1007,6 +1007,7 @@ dependencies = [
 name = "rebuild_feed_to_json"
 version = "0.1.0"
 dependencies = [
+ "chrono 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "lambda_runtime 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "rss 1.6.1 (registry+https://github.com/rust-lang/crates.io-index)",

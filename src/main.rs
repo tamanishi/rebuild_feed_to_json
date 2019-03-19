@@ -7,6 +7,7 @@ extern crate log;
 extern crate simple_logger;
 extern crate rss;
 
+use chrono::{DateTime, FixedOffset, Utc};
 use lambda::error::HandlerError;
 use rss::{Channel, Item};
 use scraper::{Html, Selector};
@@ -48,10 +49,12 @@ fn handler(_e: Episodes, _c: lambda::Context) -> Result<Episodes, HandlerError> 
         episodes: Vec::new(),
     };
     for item in items {
+        let pub_date: DateTime<FixedOffset> = DateTime::parse_from_rfc2822(&item.pub_date().unwrap()).unwrap();
+        let pub_date_utc: DateTime<Utc> = pub_date.with_timezone(&Utc);
         let mut episode = Episode {
             title: item.title().unwrap().to_string(),
             media_url: item.link().unwrap().to_string(),
-            publication_date: item.pub_date().unwrap().to_string(),
+            publication_date: pub_date_utc.format("%+").to_string(),
             shownotes: Vec::new(),
         };
 
