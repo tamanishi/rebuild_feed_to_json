@@ -1,17 +1,10 @@
 #[macro_use]
-extern crate lambda_runtime as lambda;
-#[macro_use]
 extern crate serde_derive;
-#[macro_use]
-extern crate log;
-extern crate simple_logger;
 extern crate rss;
 
 use chrono::{DateTime, FixedOffset, Utc};
-use lambda::error::HandlerError;
 use rss::{Channel, Item};
 use scraper::{Html, Selector};
-use std::error::Error;
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -35,14 +28,16 @@ struct Shownote {
     url: String,
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
-    simple_logger::init_with_level(log::Level::Info)?;
-    lambda!(handler); 
+fn main() {
+    let episodes: Episodes = generate_episodes();
 
-    Ok(())
+    match serde_json::to_string(&episodes) {
+        Ok(episodes_json) => println!("{}", episodes_json),
+        Err(_) => println!("{{ \"episodes\": [] }}")
+    }
 }
 
-fn handler(_e: Episodes, _c: lambda::Context) -> Result<Episodes, HandlerError> {
+fn generate_episodes() -> Episodes {
     let channel = Channel::from_url("http://feeds.rebuild.fm/rebuildfm").unwrap();
     let items: &[Item] = channel.items();
     let mut episodes = Episodes {
@@ -74,5 +69,5 @@ fn handler(_e: Episodes, _c: lambda::Context) -> Result<Episodes, HandlerError> 
         }
         episodes.episodes.push(episode);
     }
-    Ok(episodes)
+    episodes
 }
